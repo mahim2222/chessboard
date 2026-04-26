@@ -4,7 +4,7 @@ import { CheckState, Color, Coords, FENChar, LastMove, pieceImagePaths, SafeSqua
 import { SelectedSquare } from "@/types/chess-board"
 import { IoMdClose } from "react-icons/io"
 import { StockFish } from "./stockfish"
-import { calculateMovementPixel } from "@/utils/func"
+import { calculateMovementPixel, getChessSquareSize } from "@/utils/func"
 import GameOverPopup from "../ui/GameOverPopup"
 import MoveList from "../multiplayer/gameinfo/move-list"
 import { FaAngleLeft, FaAngleRight, FaAngleDoubleLeft, FaAngleDoubleRight, FaRedo } from "react-icons/fa"
@@ -273,7 +273,13 @@ function updateBoard(prevX: number, prevY: number, newX: number, newY: number): 
   }
   
   // Only animate for click-to-move
-  const { left, top } = calculateMovementPixel(prevX, prevY, newX, newY, 100)
+  const { left, top } = calculateMovementPixel(
+    prevX,
+    prevY,
+    newX,
+    newY,
+    getChessSquareSize()
+  )
  
   const piece_img: any = document.getElementById(`box-${prevX}${prevY}`)?.querySelector('.piece_img')
   if(piece_img){
@@ -340,18 +346,19 @@ function handleDragStart(e: React.DragEvent, x: number, y: number) {
   
   // Create a simple, clean drag image
   const dragImage = document.createElement('div')
-  dragImage.innerHTML = `<img src="${pieceImagePaths[piece]}" style="width: 80px; height: 80px; border: none; outline: none;" />`
-  dragImage.style.position = 'absolute'
-  dragImage.style.top = '-1000px'
-  dragImage.style.left = '-1000px'
-  dragImage.style.pointerEvents = 'none'
-  dragImage.style.zIndex = '9999'
-  dragImage.style.width = '80px'
-  dragImage.style.height = '80px'
+  const sz = getChessSquareSize()
+  const imgSize = Math.round(Math.max(32, sz * 0.8))
+  const half = Math.round(imgSize / 2)
+  dragImage.innerHTML = `<img src="${pieceImagePaths[piece]}" style="width: ${imgSize}px; height: ${imgSize}px; border: none; outline: none;" />`
+  dragImage.style.position = "absolute"
+  dragImage.style.top = "-1000px"
+  dragImage.style.left = "-1000px"
+  dragImage.style.pointerEvents = "none"
+  dragImage.style.zIndex = "9999"
+  dragImage.style.width = `${imgSize}px`
+  dragImage.style.height = `${imgSize}px`
   document.body.appendChild(dragImage)
-  
-  // Set the drag image with proper offset (center of the piece)
-  e.dataTransfer.setDragImage(dragImage, 40, 40)
+  e.dataTransfer.setDragImage(dragImage, half, half)
   
   // Clean up drag image after a short delay
   setTimeout(() => {
@@ -596,8 +603,6 @@ return(
 
 </div>
 
-
-</div>
 </div>
 
 <div className="gameinfo_wraper">
@@ -658,6 +663,7 @@ return(
           </button>
         </div>
   </div>
+</div>
 </div>
 </>
 )

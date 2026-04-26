@@ -11,6 +11,6 @@ body{
 }
 
 :root {
-  --tile-size: 100px;
+  --board-max: 800px;
   --light-tile: #F0D8B7;
 }
