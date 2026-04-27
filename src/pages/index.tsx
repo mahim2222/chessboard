@@ -15,7 +15,7 @@ const Home = () => {
   const router = useRouter()
 
   const goToOpponent = useCallback(() => {
-    void router.push(`/games/${generateGameId()}`)
+    void router.push(`/game/${generateGameId()}`)
   }, [router])
 
   const goToComputer = useCallback(() => {
